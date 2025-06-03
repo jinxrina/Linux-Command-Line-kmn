@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Command Line Cheat Sheet</title>
+    <style>
+        :root {
+            --primary: #ff7b00;
+            --secondary: #6c5ce7;
+            --accent: #00cec9;
+            --text: #f1f1f1;
+            --text-secondary: #dfe6e9;
+            --bg-dark: #0f0f1e;
+            --card-bg: rgba(30, 30, 46, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f1e 0%, #1e1e2e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .halo {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .halo:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: 10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .halo:nth-child(2) {
+            width: 600px;
+            height: 600px;
+            background: var(--secondary);
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        .halo:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: var(--accent);
+            top: 60%;
+            left: 30%;
+            animation-delay: -10s;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20%;
+            animation: floatShape 15s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 15%;
+            left: 10%;
+            animation-duration: 25s;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 70%;
+            left: 20%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 40%;
+            right: 15%;
+            animation-duration: 40s;
+            animation-delay: -12s;
+        }
+
+        .shape:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            bottom: 10%;
+            right: 20%;
+            animation-duration: 35s;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-30px) scale(1.05);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes floatShape {
+            0% {
+                transform: translateY(0) rotate(0);
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 0;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(108, 92, 231, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: transform 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            transition: all 0.3s ease;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .nav-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--card-border);
+            transform: translateY(-3px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--secondary-rgb), 0.2));
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .nav-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Content Sections */
+        .content-section {
+            margin-bottom: 3rem;
+            animation: fadeUp 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .content-section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .content-section:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .content-section:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .content-section:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-right: 15px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            box-shadow: inset 0 -3px 0 var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .command-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .command-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .command-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .command-syntax {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            border-left: 3px solid var(--accent);
+        }
+
+        .command-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .command-examples {
+            margin-top: 15px;
+        }
+
+        .example {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .tip {
+            background: rgba(255, 123, 0, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: var(--text);
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 206, 201, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .stat-card {
+                min-width: 120px;
+            }
+
+            .nav-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .tab-btn {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .nav-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex-basis: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="halo"></div>
+        <div class="halo"></div>
+        <div class="halo"></div>
+    </div>
+
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Linux Command Line Cheat Sheet</h1>
+            <p class="subtitle">Master the terminal with this comprehensive guide to essential Linux commands, organized by category for easy reference<br> Created By Kyaw Myo Naing </p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Commands</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Examples</div>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search for a command..." id="searchInput">
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <div class="nav-grid">
+                <div class="nav-item active" data-category="basics">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-label">Basics</div>
+                </div>
+                <div class="nav-item" data-category="files">
+                    <div class="nav-icon">📁</div>
+                    <div class="nav-label">Files</div>
+                </div>
+                <div class="nav-item" data-category="system">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">System</div>
+                </div>
+                <div class="nav-item" data-category="network">
+                    <div class="nav-icon">🌐</div>
+                    <div class="nav-label">Network</div>
+                </div>
+                <div class="nav-item" data-category="advanced">
+                    <div class="nav-icon">🚀</div>
+                    <div class="nav-label">Advanced</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Basics Section -->
+        <section class="content-section" id="basics">
+            <div class="section-header">
+                <h2 class="section-title">Basic Commands</h2>
+            </div>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="navigation">Navigation</button>
+                <button class="tab-btn" data-tab="viewing">Viewing</button>
+                <button class="tab-btn" data-tab="manipulation">Manipulation</button>
+            </div>
+            
+            <div class="tab-content active" id="navigation">
+                <div class="command-card">
+                    <div class="command-name">pwd</div>
+                    <div class="command-syntax">pwd</div>
+                    <div class="command-description">Print Working Directory: Shows the current directory you are in.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ pwd<br>
+                            /home/user/documents
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">cd</div>
+                    <div class="command-syntax">cd [directory]</div>
+                    <div class="command-description">Change Directory: Navigate to the specified directory.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Change to home directory:</div>
+                            $ cd ~
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Go up one directory:</div>
+                            $ cd ..
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Change to specific directory:</div>
+                            $ cd /var/www/html
+                        </div>
+                    </div>
+                    <div class="tip">Tip: Use 'cd -' to switch to the previous directory you were in.</div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">ls</div>
+                    <div class="command-syntax">ls [options] [directory]</div>
+                    <div class="command-description">List Directory Contents: Display files and directories.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">List with details:</div>
+                            $ ls -l
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Show hidden files:</div>
+                            $ ls -a
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Human-readable file sizes:</div>
+                            $ ls -lh
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="viewing">
+                <div class="command-card">
+                    <div class="command-name">cat</div>
+                    <div class="command-syntax">cat [options] [file]</div>
+                    <div class="command-description">Concatenate and display file content.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">View file content:</div>
+                            $ cat file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">View with line numbers:</div>
+                            $ cat -n file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">less</div>
+                    <div class="command-syntax">less [options] [file]</div>
+                    <div class="command-description">View file contents with pagination and scrolling.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ less large_log_file.txt
+                        </div>
+                    </div>
+                    <div class="tip">Tip: Press 'q' to exit, '/' to search, and space bar to scroll down.</div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">head</div>
+                    <div class="command-syntax">head [options] [file]</div>
+                    <div class="command-description">Display the beginning of a file (default: first 10 lines).</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">View first 10 lines:</div>
+                            $ head file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">View first 5 lines:</div>
+                            $ head -n 5 file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">tail</div>
+                    <div class="command-syntax">tail [options] [file]</div>
+                    <div class="command-description">Display the end of a file (default: last 10 lines).</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">View last 10 lines:</div>
+                            $ tail file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Follow file updates in real-time:</div>
+                            $ tail -f /var/log/syslog
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="manipulation">
+                <div class="command-card">
+                    <div class="command-name">touch</div>
+                    <div class="command-syntax">touch [options] [file]</div>
+                    <div class="command-description">Create an empty file or update file timestamps.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Create a new file:</div>
+                            $ touch newfile.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">mkdir</div>
+                    <div class="command-syntax">mkdir [options] [directory]</div>
+                    <div class="command-description">Create one or more directories.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Create a directory:</div>
+                            $ mkdir new_folder
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Create nested directories:</div>
+                            $ mkdir -p parent/child/grandchild
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">cp</div>
+                    <div class="command-syntax">cp [options] source destination</div>
+                    <div class="command-description">Copy files and directories.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Copy a file:</div>
+                            $ cp file.txt backup/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Copy directory recursively:</div>
+                            $ cp -r folder/ backup/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">mv</div>
+                    <div class="command-syntax">mv [options] source destination</div>
+                    <div class="command-description">Move or rename files and directories.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Rename a file:</div>
+                            $ mv oldname.txt newname.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Move a file to a directory:</div>
+                            $ mv file.txt /path/to/directory/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">rm</div>
+                    <div class="command-syntax">rm [options] [file]</div>
+                    <div class="command-description">Remove files or directories.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Remove a file:</div>
+                            $ rm file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Remove recursively with confirmation:</div>
+                            $ rm -ri directory/
+                        </div>
+                    </div>
+                    <div class="tip">Warning: Be careful with 'rm -rf', it deletes everything without confirmation!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Files Section -->
+        <section class="content-section" id="files" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">File Operations</h2>
+            </div>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="permissions">Permissions</button>
+                <button class="tab-btn" data-tab="searching">Searching</button>
+                <button class="tab-btn" data-tab="compression">Compression</button>
+            </div>
+            
+            <div class="tab-content active" id="permissions">
+                <div class="command-card">
+                    <div class="command-name">chmod</div>
+                    <div class="command-syntax">chmod [options] mode file</div>
+                    <div class="command-description">Change file permissions.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Make a file executable:</div>
+                            $ chmod +x script.sh
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Set specific permissions:</div>
+                            $ chmod 755 file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">chown</div>
+                    <div class="command-syntax">chown [options] owner[:group] file</div>
+                    <div class="command-description">Change file owner and group.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Change owner:</div>
+                            $ chown user file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Change owner and group:</div>
+                            $ chown user:group file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">chgrp</div>
+                    <div class="command-syntax">chgrp [options] group file</div>
+                    <div class="command-description">Change group ownership.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ chgrp developers file.txt
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="searching">
+                <div class="command-card">
+                    <div class="command-name">find</div>
+                    <div class="command-syntax">find [path] [expression]</div>
+                    <div class="command-description">Search for files in a directory hierarchy.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Find by name:</div>
+                            $ find /home -name "*.txt"
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Find files modified in the last 7 days:</div>
+                            $ find /var/log -type f -mtime -7
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">grep</div>
+                    <div class="command-syntax">grep [options] pattern [file...]</div>
+                    <div class="command-description">Search for patterns in files.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Search for text in file:</div>
+                            $ grep "error" logfile.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Case-insensitive search:</div>
+                            $ grep -i "warning" *.log
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Recursive search with line numbers:</div>
+                            $ grep -rn "function" --include="*.php" /var/www/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">locate</div>
+                    <div class="command-syntax">locate [options] pattern</div>
+                    <div class="command-description">Find files by name using a database.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ locate "*.conf"
+                        </div>
+                    </div>
+                    <div class="tip">Tip: Run 'sudo updatedb' to update the locate database.</div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="compression">
+                <div class="command-card">
+                    <div class="command-name">tar</div>
+                    <div class="command-syntax">tar [options] [archive-file] [file or directory to be archived]</div>
+                    <div class="command-description">Archive utility for creating and extracting file archives.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Create a tar archive:</div>
+                            $ tar -cvf archive.tar /path/to/directory/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Create a compressed (gzip) archive:</div>
+                            $ tar -czvf archive.tar.gz /path/to/directory/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Extract a tar archive:</div>
+                            $ tar -xvf archive.tar
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">gzip</div>
+                    <div class="command-syntax">gzip [options] [file...]</div>
+                    <div class="command-description">Compress or expand files.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Compress a file:</div>
+                            $ gzip file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Decompress a file:</div>
+                            $ gzip -d file.txt.gz
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">zip/unzip</div>
+                    <div class="command-syntax">zip [options] [zipfile] [file...] / unzip [options] [zipfile]</div>
+                    <div class="command-description">Package and compress files in zip format / extract zip archives.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Create a zip archive:</div>
+                            $ zip -r archive.zip /path/to/directory/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Extract a zip archive:</div>
+                            $ unzip archive.zip
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- System Section -->
+        <section class="content-section" id="system" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">System Commands</h2>
+            </div>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="monitoring">Monitoring</button>
+                <button class="tab-btn" data-tab="users">Users</button>
+                <button class="tab-btn" data-tab="services">Services</button>
+            </div>
+            
+            <div class="tab-content active" id="monitoring">
+                <div class="command-card">
+                    <div class="command-name">top</div>
+                    <div class="command-syntax">top [options]</div>
+                    <div class="command-description">Display Linux processes in real-time with system resource usage.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ top
+                        </div>
+                    </div>
+                    <div class="tip">Tip: Press 'q' to exit, 'h' for help, 'k' to kill a process.</div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">htop</div>
+                    <div class="command-syntax">htop [options]</div>
+                    <div class="command-description">Interactive process viewer, an enhanced version of top.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ htop
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">ps</div>
+                    <div class="command-syntax">ps [options]</div>
+                    <div class="command-description">Report a snapshot of the current processes.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show all processes:</div>
+                            $ ps aux
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Process tree:</div>
+                            $ ps -ef --forest
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">free</div>
+                    <div class="command-syntax">free [options]</div>
+                    <div class="command-description">Display amount of free and used memory in the system.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Human-readable output:</div>
+                            $ free -h
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">df</div>
+                    <div class="command-syntax">df [options]</div>
+                    <div class="command-description">Report file system disk space usage.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Human-readable sizes:</div>
+                            $ df -h
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">du</div>
+                    <div class="command-syntax">du [options] [file...]</div>
+                    <div class="command-description">Estimate file space usage.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Summarize directory usage:</div>
+                            $ du -sh /var/log
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="users">
+                <div class="command-card">
+                    <div class="command-name">useradd</div>
+                    <div class="command-syntax">useradd [options] username</div>
+                    <div class="command-description">Create a new user account.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Create a new user:</div>
+                            $ sudo useradd -m -s /bin/bash newuser
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">passwd</div>
+                    <div class="command-syntax">passwd [options] [user]</div>
+                    <div class="command-description">Change user password.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Change your password:</div>
+                            $ passwd
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Change another user's password:</div>
+                            $ sudo passwd username
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">userdel</div>
+                    <div class="command-syntax">userdel [options] username</div>
+                    <div class="command-description">Delete a user account.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Delete user account and home directory:</div>
+                            $ sudo userdel -r username
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">who</div>
+                    <div class="command-syntax">who [options]</div>
+                    <div class="command-description">Show who is logged on.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ who
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">last</div>
+                    <div class="command-syntax">last [options] [user...]</div>
+                    <div class="command-description">Show listing of last logged in users.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show last 10 logins:</div>
+                            $ last -n 10
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">sudo</div>
+                    <div class="command-syntax">sudo [options] command</div>
+                    <div class="command-description">Execute a command as another user, typically the superuser.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Run command as root:</div>
+                            $ sudo apt update
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="services">
+                <div class="command-card">
+                    <div class="command-name">systemctl</div>
+                    <div class="command-syntax">systemctl [options] command [name]</div>
+                    <div class="command-description">Control the systemd system and service manager.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Start a service:</div>
+                            $ sudo systemctl start apache2
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Enable service at boot:</div>
+                            $ sudo systemctl enable apache2
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Check service status:</div>
+                            $ systemctl status apache2
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">service</div>
+                    <div class="command-syntax">service name command</div>
+                    <div class="command-description">Run a System V init script.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Restart a service:</div>
+                            $ sudo service nginx restart
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">crontab</div>
+                    <div class="command-syntax">crontab [options]</div>
+                    <div class="command-description">Schedule periodic tasks.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Edit crontab:</div>
+                            $ crontab -e
+                        </div>
+                        <div class="example">
+                            <div class="example-title">List scheduled jobs:</div>
+                            $ crontab -l
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">kill</div>
+                    <div class="command-syntax">kill [options] pid</div>
+                    <div class="command-description">Send a signal to a process, usually to terminate it.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Terminate a process:</div>
+                            $ kill 1234
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Force kill a process:</div>
+                            $ kill -9 1234
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Network Section -->
+        <section class="content-section" id="network" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">Network Commands</h2>
+            </div>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="connectivity">Connectivity</button>
+                <button class="tab-btn" data-tab="transfer">File Transfer</button>
+                <button class="tab-btn" data-tab="nettools">Network Tools</button>
+            </div>
+            
+            <div class="tab-content active" id="connectivity">
+                <div class="command-card">
+                    <div class="command-name">ping</div>
+                    <div class="command-syntax">ping [options] destination</div>
+                    <div class="command-description">Send ICMP ECHO_REQUEST to network hosts.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Basic ping:</div>
+                            $ ping google.com
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Limit to 5 packets:</div>
+                            $ ping -c 5 8.8.8.8
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">ip</div>
+                    <div class="command-syntax">ip [ OPTIONS ] OBJECT { COMMAND | help }</div>
+                    <div class="command-description">Show / manipulate routing, devices, policy routing and tunnels.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show IP addresses:</div>
+                            $ ip addr show
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Show routing table:</div>
+                            $ ip route
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">ifconfig</div>
+                    <div class="command-syntax">ifconfig [interface] [options]</div>
+                    <div class="command-description">Configure network interfaces (older alternative to 'ip').</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show all interfaces:</div>
+                            $ ifconfig
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">netstat</div>
+                    <div class="command-syntax">netstat [options]</div>
+                    <div class="command-description">Display network connections, routing tables, interface statistics.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show all listening ports:</div>
+                            $ netstat -tuln
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">ss</div>
+                    <div class="command-syntax">ss [options]</div>
+                    <div class="command-description">Another utility to investigate sockets (replaces netstat).</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Show listening TCP ports:</div>
+                            $ ss -lt
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="transfer">
+                <div class="command-card">
+                    <div class="command-name">scp</div>
+                    <div class="command-syntax">scp [options] [[user@]src_host:]file1 [[user@]dest_host:]file2</div>
+                    <div class="command-description">Securely copy files between hosts on a network.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Copy from local to remote:</div>
+                            $ scp file.txt user@remote:/path/to/destination/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Copy from remote to local:</div>
+                            $ scp user@remote:/path/to/file.txt /local/path/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">rsync</div>
+                    <div class="command-syntax">rsync [options] source destination</div>
+                    <div class="command-description">Fast, versatile file copying tool.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Sync local directories:</div>
+                            $ rsync -av /source/directory/ /destination/directory/
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Sync with remote system:</div>
+                            $ rsync -avz -e ssh /local/dir/ user@remote:/path/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">wget</div>
+                    <div class="command-syntax">wget [options] [URL]</div>
+                    <div class="command-description">Non-interactive network downloader.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Download a file:</div>
+                            $ wget https://example.com/file.zip
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Download recursively:</div>
+                            $ wget -r -np https://example.com/
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">curl</div>
+                    <div class="command-syntax">curl [options] [URL]</div>
+                    <div class="command-description">Transfer data from or to a server.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">GET request:</div>
+                            $ curl https://api.example.com/users
+                        </div>
+                        <div class="example">
+                            <div class="example-title">POST request with data:</div>
+                            $ curl -X POST -d "name=value" https://api.example.com/users
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="nettools">
+                <div class="command-card">
+                    <div class="command-name">dig</div>
+                    <div class="command-syntax">dig [options] name [type]</div>
+                    <div class="command-description">DNS lookup utility.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">DNS lookup:</div>
+                            $ dig google.com
+                        </div>
+                        <div class="example">
+                            <div class="example-title">MX record lookup:</div>
+                            $ dig google.com MX
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">nslookup</div>
+                    <div class="command-syntax">nslookup [options] [name] [server]</div>
+                    <div class="command-description">Query Internet name servers interactively.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ nslookup google.com
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">traceroute</div>
+                    <div class="command-syntax">traceroute [options] host</div>
+                    <div class="command-description">Print the route packets trace to network host.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ traceroute google.com
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">nmap</div>
+                    <div class="command-syntax">nmap [options] target</div>
+                    <div class="command-description">Network exploration tool and security / port scanner.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Scan a host:</div>
+                            $ nmap 192.168.1.1
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Scan specific ports:</div>
+                            $ nmap -p 80,443 example.com
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">tcpdump</div>
+                    <div class="command-syntax">tcpdump [options] [expression]</div>
+                    <div class="command-description">Dump traffic on a network.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Capture on interface:</div>
+                            $ sudo tcpdump -i eth0
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Filter traffic:</div>
+                            $ sudo tcpdump -i eth0 port 80
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Advanced Section -->
+        <section class="content-section" id="advanced" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">Advanced Commands</h2>
+            </div>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="process">Process Control</button>
+                <button class="tab-btn" data-tab="scripting">Scripting</button>
+                <button class="tab-btn" data-tab="text">Text Processing</button>
+            </div>
+            
+            <div class="tab-content active" id="process">
+                <div class="command-card">
+                    <div class="command-name">jobs</div>
+                    <div class="command-syntax">jobs [options]</div>
+                    <div class="command-description">Display status of jobs in the current session.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">List all jobs:</div>
+                            $ jobs -l
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">fg</div>
+                    <div class="command-syntax">fg [job_spec]</div>
+                    <div class="command-description">Move job to the foreground.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Bring job 1 to foreground:</div>
+                            $ fg %1
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">bg</div>
+                    <div class="command-syntax">bg [job_spec]</div>
+                    <div class="command-description">Move jobs to the background.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Move job 2 to background:</div>
+                            $ bg %2
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">nice</div>
+                    <div class="command-syntax">nice [option] [command [arg]...]</div>
+                    <div class="command-description">Run a command with modified scheduling priority.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Run with lower priority:</div>
+                            $ nice -n 10 ./cpu_intensive_task
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">renice</div>
+                    <div class="command-syntax">renice priority [[-p] pid ...] [[-g] pgrp ...] [[-u] user ...]</div>
+                    <div class="command-description">Alter priority of running processes.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Example:</div>
+                            $ renice -n 5 -p 1234
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">nohup</div>
+                    <div class="command-syntax">nohup command [args] [&]</div>
+                    <div class="command-description">Run a command immune to hangups, with output to a non-tty.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Run in background:</div>
+                            $ nohup ./long_script.sh > output.log 2>&1 &
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="scripting">
+                <div class="command-card">
+                    <div class="command-name">awk</div>
+                    <div class="command-syntax">awk [options] 'program' file</div>
+                    <div class="command-description">Pattern scanning and processing language.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Print specific columns:</div>
+                            $ awk '{print $1, $3}' file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Sum column values:</div>
+                            $ awk '{sum += $1} END {print sum}' file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">sed</div>
+                    <div class="command-syntax">sed [options] 'script' [input-file]</div>
+                    <div class="command-description">Stream editor for filtering and transforming text.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Replace text:</div>
+                            $ sed 's/old/new/g' file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Delete lines:</div>
+                            $ sed '/pattern/d' file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">xargs</div>
+                    <div class="command-syntax">xargs [options] [command [initial-arguments]]</div>
+                    <div class="command-description">Build and execute command lines from standard input.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">With find:</div>
+                            $ find . -name "*.txt" | xargs grep "pattern"
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">expr</div>
+                    <div class="command-syntax">expr expression</div>
+                    <div class="command-description">Evaluate expressions.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Arithmetic:</div>
+                            $ expr 5 + 3
+                        </div>
+                        <div class="example">
+                            <div class="example-title">String length:</div>
+                            $ expr length "Hello"
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="text">
+                <div class="command-card">
+                    <div class="command-name">sort</div>
+                    <div class="command-syntax">sort [options] [file...]</div>
+                    <div class="command-description">Sort lines of text files.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Sort numerically:</div>
+                            $ sort -n numbers.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Sort in reverse:</div>
+                            $ sort -r file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">uniq</div>
+                    <div class="command-syntax">uniq [options] [input [output]]</div>
+                    <div class="command-description">Report or omit repeated lines.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Remove duplicates:</div>
+                            $ sort file.txt | uniq
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Count occurrences:</div>
+                            $ sort file.txt | uniq -c
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">cut</div>
+                    <div class="command-syntax">cut [options] [file...]</div>
+                    <div class="command-description">Remove sections from each line of files.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Extract columns:</div>
+                            $ cut -d',' -f1,3 data.csv
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Cut characters:</div>
+                            $ cut -c1-5 file.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">tr</div>
+                    <div class="command-syntax">tr [options] set1 [set2]</div>
+                    <div class="command-description">Translate or delete characters.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Convert to uppercase:</div>
+                            $ cat file.txt | tr 'a-z' 'A-Z'
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Delete characters:</div>
+                            $ cat file.txt | tr -d ','
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">diff</div>
+                    <div class="command-syntax">diff [options] file1 file2</div>
+                    <div class="command-description">Compare files line by line.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Compare two files:</div>
+                            $ diff file1.txt file2.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Side-by-side comparison:</div>
+                            $ diff -y file1.txt file2.txt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="command-card">
+                    <div class="command-name">wc</div>
+                    <div class="command-syntax">wc [options] [file...]</div>
+                    <div class="command-description">Print newline, word, and byte counts for each file.</div>
+                    <div class="command-examples">
+                        <div class="example">
+                            <div class="example-title">Count lines:</div>
+                            $ wc -l file.txt
+                        </div>
+                        <div class="example">
+                            <div class="example-title">Count words:</div>
+                            $ wc -w file.txt
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Linux Command Line Cheat Sheet | Designed with ❤️ | Copyright © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.content-section');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const category = item.getAttribute('data-category');
+                
+                // Update active nav item
+                navItems.forEach(navItem => navItem.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Show selected section, hide others
+                sections.forEach(section => {
+                    if (section.id === category) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Tab navigation functionality
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                const tabContainer = button.closest('.content-section');
+                
+                // Update active tab button
+                tabContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show selected tab content, hide others
+                tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const commandCards = document.querySelectorAll('.command-card');
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            commandCards.forEach(card => {
+                const commandName = card.querySelector('.command-name').textContent.toLowerCase();
+                const commandDesc = card.querySelector('.command-description').textContent.toLowerCase();
+                const commandSyntax = card.querySelector('.command-syntax').textContent.toLowerCase();
+                
+                if (commandName.includes(searchTerm) || 
+                    commandDesc.includes(searchTerm) || 
+                    commandSyntax.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    
+                    // Highlight the parent section and tab
+                    const parentSection = card.closest('.content-section');
+                    const parentTab = card.closest('.tab-content');
+                    
+                    if (searchTerm.length > 0) {
+                        // Show the section containing the match
+                        sections.forEach(section => section.style.display = 'none');
+                        parentSection.style.display = 'block';
+                        
+                        // Show the tab containing the match
+                        const tabId = parentTab.id;
+                        parentSection.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                        parentTab.classList.add('active');
+                        
+                        // Update tab navigation buttons
+                        parentSection.querySelectorAll('.tab-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-tab') === tabId) {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Update main navigation
+                        const sectionId = parentSection.id;
+                        navItems.forEach(navItem => {
+                            navItem.classList.remove('active');
+                            if (navItem.getAttribute('data-category') === sectionId) {
+                                navItem.classList.add('active');
+                            }
+                        });
+                    }
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // If search is empty, reset to default view
+            if (searchTerm === '') {
+                navItems.forEach(navItem => {
+                    if (navItem.classList.contains('active')) {
+                        const category = navItem.getAttribute('data-category');
+                        sections.forEach(section => {
+                            if (section.id === category) {
+                                section.style.display = 'block';
+                                
+                                // Show the first tab content and activate its button
+                                const firstTabContent = section.querySelector('.tab-content');
+                                const firstTabId = firstTabContent.id;
+                                
+                                section.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                                firstTabContent.classList.add('active');
+                                
+                                section.querySelectorAll('.tab-btn').forEach(btn => {
+                                    btn.classList.remove('active');
+                                    if (btn.getAttribute('data-tab') === firstTabId) {
+                                        btn.classList.add('active');
+                                    }
+                                });
+                            } else {
+                                section.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+                
+                // Show all command cards
+                commandCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        
+        // Initialize tabs
+        document.querySelectorAll('.content-section').forEach(section => {
+            const firstTabBtn = section.querySelector('.tab-btn');
+            const firstTabId = firstTabBtn?.getAttribute('data-tab');
+            
+            if (firstTabId) {
+                section.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === firstTabId) {
+                        content.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
